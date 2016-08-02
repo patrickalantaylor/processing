@@ -6,7 +6,7 @@ int tweakLevel = 20;
 void setup() {
  
   size(1280, 720);
-  omegaClip = new Movie(this, "G:\\clips\\archiveomega.mp4");
+  omegaClip = new Movie(this, "/Users/patricktaylor/Movies/archiveomega.mp4");
 }
  
  
