@@ -1,5 +1,5 @@
-This is work thia I am doning in plans to support live musical performances with video.
+This is work that I am doing in plans to support live musical performances with video.
 
-I intend to set up a system in which video playback of prerecorded files is distorted in meaningful ways by both the audio of a live performance and the input of an operator.
+I a building a system in which video playback of prerecorded files is distorted in interesting ways by both the audio of a live performance and the input of an operator.
 
 
