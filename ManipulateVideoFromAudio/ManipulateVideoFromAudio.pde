@@ -1,4 +1,4 @@
-import processing.video.*;
+ import processing.video.*;
 
 import ddf.minim.*;
 import ddf.minim.analysis.*;
@@ -18,9 +18,13 @@ Movie movie;
 float timeSize;
 float sampleRate;
 
-int tweakLevel = 20;
+int horizontalTweak = 20;
+int verticalTweak;
 int incrementor;
 int iteration;
+
+ArrayList<HashMap<String, String>> data = new ArrayList<HashMap<String, String>>();
+
 
 public float getBandWidth()
 {
@@ -47,7 +51,7 @@ void setup()
   fft = new FFT(in.bufferSize(), in.sampleRate());
   timeSize = in.bufferSize();
   sampleRate = in.sampleRate();
-  movie = new Movie(this, "/Users/patricktaylor/Movies/antennafundamentalspropagation.mp4");
+  movie = new Movie(this, "/Users/patricktaylor/Movies/omegaStars.mp4");
 }
  
 void movieEvent(Movie m)
@@ -65,62 +69,38 @@ void draw()
   stroke(128, 200, 0);
   incrementor = 5;
   iteration = 0;
-  for(int i = 0; i < fft.specSize(); i += incrementor)
+  for(int audioSampleId = 0; audioSampleId < fft.specSize(); audioSampleId += incrementor)
   {
     iteration += 1;
     incrementor += (5 + iteration * 9);
     float totalForAverage = 0;
-    for (int k =0; k < incrementor ; k += 1)
+    for (int idInRange =0; idInRange < incrementor ; idInRange += 1)
     {
-      totalForAverage += fft.getBand(i+k);
+      totalForAverage += fft.getBand(audioSampleId+idInRange);
     }
     frequencyBands[iteration] = totalForAverage/incrementor;
-    //System.out.format("avg=%f\n", totalForAverage/incrementor);
-
- // DEBUG
-if (shown == 50)
-{
-  System.out.format("iteration: %d average amplitude %f \n", iteration, frequencyBands[iteration]);
-}
-// END DEBUG
-
-    tweakLevel = int(frequencyBands[1]*3);
-      
-    //if// (i % 2 == 0)
-    //{
-//    //  line((i+400), height, (i+400), height - fft.getBand(i)*20);
-    }
-//    //else
-    {
-//    //  line((400-i), height, (400-i), height - fft.getBand(i)*20);
-    }
-//  }
-  //waveform display
-  //stroke(255);
-  //for(int i = 0; i < in.left.size() - 1; i++)
-  //{
-  //  line(i, 200 + in.left.get(i)*200, i+1, 200 + in.left.get(i+1)*50);
-  //  line(i, 350 + in.right.get(i)*200, i+1, 350 + in.right.get(i+1)*50);
-  //}
+  }
+    horizontalTweak = int(frequencyBands[2]*10);
+    verticalTweak = horizontalTweak;
   
   //the movie
   image(movie, 0, 0, width, height);
   loadPixels();
   int[] oldPixels = pixels.clone();
-  for (int i = tweakLevel; i < pixels.length-tweakLevel; i += 1) 
+  for (int pixelId = horizontalTweak; pixelId < pixels.length-horizontalTweak; pixelId += 1) 
   {
-    if ((brightness(oldPixels[i]) > 150) &&(i>1))
+    if ((brightness(oldPixels[pixelId]) > 250) &&(pixelId>1))
     {
-      for (int j = -tweakLevel/2; j < tweakLevel/2 ; j += 1)
+      for (int placeInRow = -horizontalTweak/2; placeInRow < horizontalTweak/2 ; placeInRow += 1)
       {
-        pixels[i + j] = oldPixels[i];
-        float bright;
-        color myColor;
-        bright = brightness(oldPixels[i]);
-        bright += tweakLevel;
-        myColor = color(bright);
-        pixels[i + j] = myColor;
+        pixels[pixelId + placeInRow - (placeInRow/2)] = oldPixels[pixelId];
+        for (int placeInColumn = -verticalTweak/2; placeInColumn < horizontalTweak/2 ; placeInColumn += 1)
+        {
+          pixels[pixelId + placeInRow - (width/2)] = oldPixels[pixelId];
+
+        }
       }
+      
     }
   }                     
   updatePixels();
@@ -132,18 +112,18 @@ void keyPressed()
 {
    if  (key == ' ')
    {
-     if (tweakLevel < 100)
+     if (horizontalTweak < 100)
      {
-       tweakLevel += 2;
-       println(tweakLevel);
+       horizontalTweak += 2;
+       println(horizontalTweak);
      }
    }
    else
    {
-     if (tweakLevel > 0)
+     if (horizontalTweak > 0)
      {
-       tweakLevel -= 2;
-       println(tweakLevel);
+       horizontalTweak -= 2;
+       println(horizontalTweak);
      }
    }
 }
