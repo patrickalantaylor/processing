@@ -42,16 +42,32 @@ public int freqToIndex(int freq)
   int i = Math.round(timeSize * fraction);
   return i;
 }
+
+public int pixelFrom2d(int xloc, int yloc)
+{
+  int pixelNum = yloc * width + xloc;
+  return pixelNum;
+}
+
+public int[] twoDFromPixel(int pixelNum)
+{
+  float rowLocation = pixelNum / width;
+  int rowNum = int(floor(rowLocation));
+  int colNum = (pixelNum % width);
+  int[] twoDLocation = new int[] {colNum, rowNum};
+  return twoDLocation;
+}
+  
  
 void setup()
 {
-  size(800, 600, P3D);
+  size(1920, 1080, P3D);
   minim = new Minim(this);
   in = minim.getLineIn();
   fft = new FFT(in.bufferSize(), in.sampleRate());
   timeSize = in.bufferSize();
   sampleRate = in.sampleRate();
-  movie = new Movie(this, "/Users/patricktaylor/Movies/wavePool.mp4");
+  movie = new Movie(this, "G:\\clips\\archiveomega.mp4");
 }
  
 void movieEvent(Movie m)
@@ -65,8 +81,7 @@ void draw()
   float[] frequencyBands = new float[7];
   background(0);
   fft.forward(in.mix);
-  // graphic EQ looking display
-  stroke(128, 200, 0);
+
   incrementor = 5;
   iteration = 0;
   for(int audioSampleId = 0; audioSampleId < fft.specSize(); audioSampleId += incrementor)
@@ -87,10 +102,36 @@ void draw()
   image(movie, 0, 0, width, height);
   loadPixels();
   int[] oldPixels = pixels.clone();
-  for (int placeInRow = width; placeInRow < pixels.length - width ; placeInRow += 1)
+  for (int location = 0; location < pixels.length ; location += 1)
   {
-    int tweakFactor = horizontalTweak + verticalTweak;
-    pixels[placeInRow] = oldPixels[placeInRow-tweakFactor];
+    int[] twoDLocation = twoDFromPixel(location);
+    int a = 2;
+    int b = 10;
+    
+    int x = twoDLocation[0];
+    int y = twoDLocation[1];
+    
+    //x =0;
+    //y = 0;
+    
+    float holden = x+y;
+    //the following line is throwing nullpointer
+    // chganging the float to double has corrected this
+    double angle = exp(holden);
+    //a*exp(-(x*x+y*y)/(b*b));
+    //int sourceX = int(cos(angle)*x + sin(angle)*y);
+    //int sourceY = int(-sin(angle)*x + cos(angle)*y);
+    
+    //int sourcePixel = pixelFrom2d(sourceX, sourceY);
+    //if (sourcePixel < 0)
+    //{
+    //  sourcePixel = 0;
+    //}
+    //if (sourcePixel > pixels.length)
+    //{
+    //  sourcePixel = pixels.length -1;
+    //}
+    //pixels[location] = oldPixels[sourcePixel];
   }                    
   updatePixels();
   movie.loop();
