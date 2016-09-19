@@ -9,7 +9,9 @@ import ddf.minim.ugens.*;
 
 import processing.video.*;
 
-import ddf.minim.*;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.Map;
  
 Minim minim;
 AudioInput in;
@@ -54,7 +56,10 @@ public int[] twoDFromPixel(int pixelNum)
   int[] twoDLocation = new int[] {colNum, rowNum};
   return twoDLocation;
 }
-  
+
+public Map<Integer, Integer> shift = new HashMap<Integer, Integer>();
+public Map<Integer, Integer> jaggySin = new HashMap<Integer, Integer>();
+
  
 void setup()
 {
@@ -64,7 +69,13 @@ void setup()
   fft = new FFT(in.bufferSize(), in.sampleRate());
   timeSize = in.bufferSize();
   sampleRate = in.sampleRate();
-  movie = new Movie(this, "G:\\clips\\leader.mp4");
+  movie = new Movie(this, "G:\\clips\\modelReel.mp4");
+  for (int i = 0 ; i < 10000 ; i++)
+  {
+    jaggySin.put(i, floor(50*(sin(i/10))));
+    shift.put(i, floor(50*(sin(i/10))));
+
+  }
 }
  
 void movieEvent(Movie m)
@@ -98,19 +109,23 @@ void draw()
   //the movie
   image(movie, 0, 0, width, height);
   loadPixels();
-  int[] oldPixels = pixels.clone();
+  color[] oldPixels = pixels.clone();
   for (int location = 0; location < pixels.length ; location += 1)
   {
-     pixels[location] = translatePixel(location, oldPixels, pixels);
+     pixels[location] = translatePixel(location, oldPixels);
   }                    
   updatePixels();
   movie.loop();
   shown += 1;
 }
 
-color translatePixel(int pixelLocation, color[] sourcePixels, color[] destinationPixels)
+color translatePixel(int pixelLocation, color[] sourcePixels)
 {
-    int newPixelLocation = floor(sin(pixelLocation));
+    int newPixelLocation = 1;
+    int row = floor(pixelLocation / width);
+    //int shift = floor(row^6/100);
+//System.out.print(shift);
+    newPixelLocation = pixelLocation-shift.get(row);
     if (newPixelLocation < 0)
     {
       newPixelLocation = 1;
